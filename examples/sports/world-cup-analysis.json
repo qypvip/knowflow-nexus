@@ -1,0 +1,30 @@
+{
+  "title": "Example: World Cup 12-Factor Tournament Analysis",
+  "domain": "sports-tournament",
+  "data_sources": ["espn-soccer-squad", "dongqiudi-mobile-api", "bing-search-cdp"],
+  "description": "多维度赛事分析框架。包含14+分析维度，覆盖天气、教练、球员、黑马等。",
+  "analysis_dimensions": [
+    "Venue Weather (场馆天气)",
+    "Climate Adaptation (气候适应度)",
+    "Coach Database (教练数据库)",
+    "Star Players (球星分析)",
+    "Dark Horse Potential (黑马潜力)",
+    "Squad Age Structure (年龄结构)",
+    "Tournament Experience (大赛经验)",
+    "Altitude Adaptation (海拔适应)",
+    "Underdog History (爆冷历史)",
+    "Penalty History (点球历史)",
+    "Club→Nation Form Index (俱乐部→国家队表现映射)",
+    "Deep Composite Score (深度综合评分)",
+    "AAI - Adaptation Advantage Index (适应优势指数)",
+    "Tactical Trends (战术趋势)"
+  ],
+  "data_sources_for_dimensions": {
+    "espn-soccer-squad": ["Star Players", "Squad Age", "Experience"],
+    "dongqiudi-mobile-api": ["Tactical Trends", "AAI Data (通过分析文章提取)"],
+    "bing-search-cdp": ["Venue Weather", "Coach Database (搜索补充)"],
+    "training-data": ["Climate Adaptation", "Underdog History", "Penalty History"]
+  },
+  "AAI_formula": "AAI = 100 × [1 − (0.7 × C × U + 0.3 × T)]",
+  "note": "赛事分析框架与足球预测共享ESPN和懂球帝数据源。AAI公式和加权打分模式可直接迁移到其他体育赛事（奥运会、欧洲杯等）。"
+}

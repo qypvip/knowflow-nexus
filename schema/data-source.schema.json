@@ -1,0 +1,140 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/qypvip/knowflow-nexus/schema/data-source.schema.json",
+  "title": "Data Source Registry Entry",
+  "description": "统一的数据源档案格式 —— 记录任何数据源的访问方式、可用性和已知问题",
+  "type": "object",
+  "required": ["id", "name", "url", "type", "accessibility", "method", "domains"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "唯一标识符，格式: provider-name (e.g. espn-soccer, tencent-finance)"
+    },
+    "name": {
+      "type": "string",
+      "description": "数据源名称（英文）"
+    },
+    "name_cn": {
+      "type": "string",
+      "description": "数据源中文名称"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "入口 URL"
+    },
+    "type": {
+      "type": "string",
+      "description": "数据源类型，决定了访问策略",
+      "enum": [
+        "server-rendered-html",
+        "json-api",
+        "mobile-api",
+        "spa",
+        "waf-blocked",
+        "cdp-required",
+        "behind-captcha",
+        "connection-reset",
+        "unavailable"
+      ]
+    },
+    "accessibility": {
+      "type": "object",
+      "description": "可访问性评估",
+      "required": ["status", "last_verified"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["verified-working", "verified-broken", "needs-test", "partial"]
+        },
+        "last_verified": {
+          "type": "string",
+          "format": "date",
+          "description": "最后验证日期"
+        },
+        "verified_by": {
+          "type": "string",
+          "description": "验证者标识（GitHub用户名或匿名ID）"
+        },
+        "notes": {
+          "type": "string",
+          "description": "访问性说明"
+        }
+      }
+    },
+    "method": {
+      "type": "object",
+      "description": "推荐的访问方法",
+      "required": ["recommended"],
+      "properties": {
+        "recommended": {
+          "type": "string",
+          "description": "推荐的访问方式",
+          "enum": ["curl", "python-requests", "cdp-browser", "mobile-api", "selenium", "not-available"]
+        },
+        "auth_required": {
+          "type": "boolean",
+          "description": "是否需要认证（Cookie/API Key）"
+        },
+        "auth_type": {
+          "type": "string",
+          "description": "认证方式",
+          "enum": ["cookie", "api-key", "oauth", "none"]
+        },
+        "rate_limit": {
+          "type": "string",
+          "description": "限流说明（频率限制/并发限制等）"
+        },
+        "encoding": {
+          "type": "string",
+          "description": "响应编码",
+          "default": "utf-8"
+        },
+        "user_agent_required": {
+          "type": "boolean",
+          "description": "是否需要特定 User-Agent"
+        }
+      }
+    },
+    "response": {
+      "type": "object",
+      "description": "响应格式说明",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["html", "json", "xml", "plain-text", "binary"]
+        },
+        "structure_hint": {
+          "type": "string",
+          "description": "结构化提示，如 CSS 选择器、JSONPath 等"
+        }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "适用领域标签，如 football, stock, gaokao, weather"
+    },
+    "known_issues": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "已知问题和踩坑记录"
+    },
+    "alternatives": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "替代数据源 ID 列表，按推荐优先级排序"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "description": { "type": "string" }
+        }
+      },
+      "description": "示例 URL（不含敏感信息）"
+    }
+  }
+}

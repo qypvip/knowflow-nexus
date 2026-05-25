@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/qypvip/knowflow-nexus/schema/meta-parameter.schema.json",
+  "title": "Meta-Parameter Pattern",
+  "description": "元参数模式 —— 记录跨领域通用的参数调整策略，而非领域特定的参数值",
+  "type": "object",
+  "required": ["id", "name", "pattern", "description", "example_domains"],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "模式名称（英文）"
+    },
+    "name_cn": {
+      "type": "string",
+      "description": "模式中文名"
+    },
+    "pattern": {
+      "type": "string",
+      "description": "模式描述（伪代码或自然语言）"
+    },
+    "condition": {
+      "type": "string",
+      "description": "触发条件"
+    },
+    "action": {
+      "type": "string",
+      "description": "执行动作"
+    },
+    "example_domains": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "已经验证此模式有效的领域"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "应用此模式的风险等级"
+    }
+  }
+}

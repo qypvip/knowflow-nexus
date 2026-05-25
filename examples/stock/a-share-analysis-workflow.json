@@ -1,0 +1,20 @@
+{
+  "title": "Example: A-Share Stock Analysis Workflow",
+  "domain": "stock",
+  "data_sources": ["tencent-finance-api", "tencent-finance-historical", "efinance-package", "sina-finance-api"],
+  "description": "A股多策略并行分析的数据流水线。每日08:30采集数据，10个策略Agent并行分析，CTO加权裁决输出TOP5推荐。",
+  "workflow": [
+    {"step": 1, "name": "数据采集", "sources": ["tencent-finance-api (实时行情)", "tencent-finance-historical (120日K线)", "efinance (全市场列表)"]},
+    {"step": 2, "name": "数据工厂", "output": "~/knowledge/data/stock/daily/YYYY-MM-DD/stock_data.json"},
+    {"step": 3, "name": "并行分析", "agents": "10个策略Agent (delegate_task)", "outputs": "S01-S10 JSON文件"},
+    {"step": 4, "name": "CTO裁决", "method": "加权融合 (权重基于历史准确率自动调整)", "output": "TOP5推荐"},
+    {"step": 5, "name": "模拟盘执行", "action": "150万模拟盘自动买入/持仓更新"},
+    {"step": 6, "name": "复盘学习", "feedback": "收盘后对比预测vs实际，更新策略权重"}
+  ],
+  "fusion_formula": "最终评分 = Σ(策略评分 × 策略权重 × 置信度) / Σ(策略权重 × 置信度)",
+  "key_data_source_notes": {
+    "tencent-finance-api": "主数据源，实时行情稳定可用",
+    "efinance-package": "限用：get_quote_history()被限流，仅用于get_realtime_quotes()获取全市场列表",
+    "tencent-finance-historical": "历史K线的替代方案，前复权支持"
+  }
+}

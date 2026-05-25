@@ -1,0 +1,567 @@
+[
+  {
+    "id": "espn-soccer-squad",
+    "name": "ESPN Soccer Team Squad",
+    "name_cn": "ESPN 球队名单",
+    "url": "https://www.espn.com/soccer/team/squad/_/id/{team_id}/{slug}",
+    "type": "server-rendered-html",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "服务端渲染HTML表格，可直接curl/wget获取。无需Cookie。已验证22支球队可提取完整26人大名单。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "无明显限流",
+      "encoding": "utf-8",
+      "user_agent_required": true
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "Table with class 'Table__TR' rows; columns: Name, Position(Pos), Age, Apps, Goals"
+    },
+    "domains": ["football", "sports-tournament"],
+    "known_issues": [
+      "阿根廷/英格兰等顶级强队页面可能包含预备队（显示超过26人）",
+      "ESPN更新可能比官方晚1-2天",
+      "不同球队的team_id不同，需要先发现（搜索或遍历）"
+    ],
+    "alternatives": ["dongqiudi-mobile-api", "fifa-official-squad"],
+    "examples": [
+      {"url": "https://www.espn.com/soccer/team/squad/_/id/478/france", "description": "🇫🇷 法国队26人名单"},
+      {"url": "https://www.espn.com/soccer/team/squad/_/id/205/brazil", "description": "🇧🇷 巴西队名单"},
+      {"url": "https://www.espn.com/soccer/team/squad/_/id/448/england", "description": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 英格兰名单（含预备队35人）"}
+    ]
+  },
+  {
+    "id": "dongqiudi-mobile-api",
+    "name": "Dongqiudi Mobile API",
+    "name_cn": "懂球帝移动端 API",
+    "url": "https://api.dongqiudi.com/app/tabs/android/1.json",
+    "type": "mobile-api",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "移动端API开放无认证，返回结构化JSON。桌面网站是React SPA不可直接提取。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "每分钟约30次",
+      "encoding": "utf-8",
+      "user_agent_required": true
+    },
+    "response": {
+      "format": "json",
+      "structure_hint": "articles[] 和 recommend[] 数组，含 id, title, description, share, secondary_category, published_at"
+    },
+    "domains": ["football", "sports-tournament"],
+    "known_issues": [
+      "Search API 返回403（不可用于搜索）",
+      "只能用 Feed 流关键词过滤",
+      "文章正文需要 browser_navigate 到 desktop article URL 读取（JS渲染但accessibility tree可读）"
+    ],
+    "alternatives": ["espn-soccer-squad"],
+    "examples": [
+      {"url": "https://api.dongqiudi.com/app/tabs/android/1.json?mark=gif&version=74", "description": "Feed API 返回最新文章列表"},
+      {"url": "https://www.dongqiudi.com/article/{id}", "description": "文章详情页（需browser_navigate）"}
+    ]
+  },
+  {
+    "id": "tencent-finance-api",
+    "name": "Tencent Finance API",
+    "name_cn": "腾讯财经行情 API",
+    "url": "https://qt.gtimg.cn/q=",
+    "type": "json-api",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "稳定可靠的A股实时行情API，返回GBK编码的文本格式。支持多股票批量查询。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "无明显限流，支持批量查询",
+      "encoding": "gbk",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "plain-text",
+      "structure_hint": "v_X_sh{code}~{name}~{code}~{price}~...格式，~分割字段"
+    },
+    "domains": ["stock"],
+    "known_issues": [
+      "返回格式是自定义文本（非标准JSON），需按~分割解析",
+      "GBK编码，Python需 .decode('gbk')",
+      "非交易时段涨跌幅为0",
+      "股票代码前缀规则：sh=6/9开头, sz=0/3开头, bj=其他"
+    ],
+    "alternatives": ["efinance-package", "sina-finance-api"],
+    "examples": [
+      {"url": "https://qt.gtimg.cn/q=sh000001,sz000001", "description": "批量查询上证指数+平安银行"},
+      {"url": "https://qt.gtimg.cn/q=sh600519", "description": "查询贵州茅台"}
+    ]
+  },
+  {
+    "id": "tencent-finance-historical",
+    "name": "Tencent Finance Historical K-Line",
+    "name_cn": "腾讯财经历史K线 API",
+    "url": "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get",
+    "type": "json-api",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "稳定可靠的历史K线API，支持前复权。efinance的替代方案。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "无明显限流",
+      "encoding": "utf-8",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "json",
+      "structure_hint": "data[code]['qfqday'] 或 ['day'] → [[date, open, close, high, low, volume], ...]"
+    },
+    "domains": ["stock"],
+    "known_issues": [
+      "最多返回120天数据",
+      "参数格式：?param={prefix}{code},day,,,{days},qfq"
+    ],
+    "alternatives": ["efinance-package"],
+    "examples": [
+      {"url": "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh000001,day,,,120,qfq", "description": "上证指数120日K线"}
+    ]
+  },
+  {
+    "id": "efinance-package",
+    "name": "Efinance Python Package",
+    "name_cn": "Efinance Python 包",
+    "url": "https://github.com/Micro-sheep/efinance",
+    "type": "json-api",
+    "accessibility": {
+      "status": "partial",
+      "last_verified": "2026-05-25",
+      "verified_by": "qypvip",
+      "notes": "get_realtime_quotes() 可用，get_quote_history() 可能被东方财富 push2his.eastmoney.com 限流（RemoteDisconnected）"
+    },
+    "method": {
+      "recommended": "python-requests",
+      "auth_required": false,
+      "rate_limit": "历史K线API频繁返回Max retries exceeded",
+      "encoding": "utf-8",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "json",
+      "structure_hint": "pandas DataFrame"
+    },
+    "domains": ["stock"],
+    "known_issues": [
+      "get_quote_history() 底层走东方财富 push2his.eastmoney.com，2026年5月起限流严重",
+      "get_realtime_quotes(fs='沪深A股') 获取全市场股票列表仍可用（约5529只）",
+      "需要 pip install efinance --break-system-packages"
+    ],
+    "alternatives": ["tencent-finance-api", "tencent-finance-historical", "sina-finance-api"]
+  },
+  {
+    "id": "sina-finance-api",
+    "name": "Sina Finance API",
+    "name_cn": "新浪财经 API",
+    "url": "https://vip.stock.finance.sina.com.cn/quotes_service/api_json_v2.php/Market_Center.getHQNodeData",
+    "type": "json-api",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "支持分页和条件筛选，可用于选股扫描"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "未知",
+      "encoding": "gbk",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "json",
+      "structure_hint": "返回股票列表JSON，支持node=sh_a/sz_a 参数"
+    },
+    "domains": ["stock"],
+    "known_issues": [
+      "排序和筛选参数需要摸索",
+      "GBK编码"
+    ],
+    "alternatives": ["tencent-finance-api", "efinance-package"]
+  },
+  {
+    "id": "sunshine-gaokao",
+    "name": "Sunshine Gaokao (阳光高考网)",
+    "name_cn": "阳光高考网",
+    "url": "https://gaokao.chsi.com.cn",
+    "type": "waf-blocked",
+    "accessibility": {
+      "status": "verified-broken",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "阿里云WAF防护，curl返回412，headless浏览器也无法通过。最权威的官方数据但不可爬取。"
+    },
+    "method": {
+      "recommended": "not-available",
+      "auth_required": true,
+      "rate_limit": "N/A",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "N/A - blocked by WAF"
+    },
+    "domains": ["gaokao"],
+    "known_issues": [
+      "阿里云WAF返回412状态码",
+      "CDP浏览器也无法绕过",
+      "建议直接使用训练知识或官方PDF"
+    ],
+    "alternatives": ["bing-search-cdp", "gaokao-quark"]
+  },
+  {
+    "id": "gaokao-quark",
+    "name": "Quark Gaokao (夸克高考)",
+    "name_cn": "夸克高考",
+    "url": "https://gaokao.quark.cn",
+    "type": "spa",
+    "accessibility": {
+      "status": "partial",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "Quark App内嵌SPA，浏览器访问会弹出下载弹窗。有完整数据（含冲稳保推荐和各校录取位次）但accessibility tree抓不全。"
+    },
+    "method": {
+      "recommended": "cdp-browser",
+      "auth_required": true,
+      "rate_limit": "未知",
+      "encoding": "utf-8",
+      "user_agent_required": true
+    },
+    "response": {
+      "format": "spa",
+      "structure_hint": "JS动态渲染，accessibility tree可能为空"
+    },
+    "domains": ["gaokao"],
+    "known_issues": [
+      "弹出'下载夸克PC端'弹窗需手动关闭",
+      "省份切换影响真题页面但不影响考生数据",
+      "子域名vt.quark.cn返回空页面",
+      "手动操作比自动化更高效，适合截图/手动记录"
+    ],
+    "alternatives": ["bing-search-cdp", "sunshine-gaokao"]
+  },
+  {
+    "id": "bing-search-cdp",
+    "name": "Bing Search (via CDP Browser)",
+    "name_cn": "必应搜索（CDP浏览器）",
+    "url": "https://cn.bing.com",
+    "type": "cdp-required",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "中国网络环境下唯一可用的搜索引擎。国内版(cn.bing.com)可通过CDP浏览器正常访问，无验证码。"
+    },
+    "method": {
+      "recommended": "cdp-browser",
+      "auth_required": false,
+      "rate_limit": "少量，正常搜索频率",
+      "encoding": "utf-8",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "搜索结果页，链接可直接访问"
+    },
+    "domains": ["gaokao", "football", "stock", "sports-tournament", "general"],
+    "known_issues": [
+      "无法curl获取（返回验证码/拦截）",
+      "需要用CDP浏览器打开才能正常访问",
+      "国内版搜索结果可能不如国际版全面",
+      "用完CDP浏览器后需要主动关闭（停止Edge进程+取消cronjob）"
+    ],
+    "alternatives": ["baidu-search-cdp", "google-search-cdp"]
+  },
+  {
+    "id": "baidu-baike",
+    "name": "Baidu Baike (百度百科)",
+    "name_cn": "百度百科",
+    "url": "https://baike.baidu.com",
+    "type": "behind-captcha",
+    "accessibility": {
+      "status": "verified-broken",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "直接curl返回404/验证码拦截。CDP浏览器可能可用但不够稳定。"
+    },
+    "method": {
+      "recommended": "not-available",
+      "auth_required": false,
+      "rate_limit": "N/A",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "N/A - blocked"
+    },
+    "domains": ["football", "gaokao", "general"],
+    "known_issues": [
+      "直接curl返回404",
+      "部分页面可能被删除",
+      "CDP浏览器可尝试但不保证"
+    ],
+    "alternatives": ["bing-search-cdp", "wikipedia", "espn-soccer-squad"]
+  },
+  {
+    "id": "wikipedia",
+    "name": "Wikipedia (维基百科)",
+    "name_cn": "维基百科",
+    "url": "https://en.wikipedia.org",
+    "type": "connection-reset",
+    "accessibility": {
+      "status": "verified-broken",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "中国网络环境下连接被重置/超时。即使是移动端API也无法访问。"
+    },
+    "method": {
+      "recommended": "not-available",
+      "auth_required": false,
+      "rate_limit": "N/A",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "N/A - connection reset"
+    },
+    "domains": ["football", "general", "gaokao"],
+    "known_issues": [
+      "连接被重置（TCP RST）",
+      "无法通过正常HTTP/HTTPS访问",
+      "代理可能可行但不在本知识库范围"
+    ],
+    "alternatives": ["espn-soccer-squad", "bing-search-cdp"]
+  },
+  {
+    "id": "dongqiudi-desktop-article",
+    "name": "Dongqiudi Desktop Article Pages",
+    "name_cn": "懂球帝桌面端文章页",
+    "url": "https://www.dongqiudi.com/article/{id}",
+    "type": "spa",
+    "accessibility": {
+      "status": "partial",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "桌面端是React SPA，但accessibility tree可读取文章正文内容。文章ID需通过Mobile API获取。"
+    },
+    "method": {
+      "recommended": "cdp-browser",
+      "auth_required": false,
+      "rate_limit": "无明显限流",
+      "encoding": "utf-8",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "浏览器accessibility tree可见球员名字、位置、俱乐部信息"
+    },
+    "domains": ["football"],
+    "known_issues": [
+      "Feed项点击不导航（React SPA绑定问题）",
+      "需先通过Mobile API获取文章ID，然后用browser_navigate直接访问",
+      "browser_snapshot(full=true)可读取正文但可能包含大量额外元素"
+    ],
+    "alternatives": ["espn-soccer-squad"],
+    "examples": [
+      {"url": "https://www.dongqiudi.com/article/123456789", "description": "懂球帝文章详情页示例"}
+    ]
+  },
+  {
+    "id": "education-ministry-cn",
+    "name": "China Ministry of Education (教育部)",
+    "name_cn": "教育部官网",
+    "url": "https://moe.gov.cn",
+    "type": "unavailable",
+    "accessibility": {
+      "status": "verified-broken",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "直接curl返回空响应。可能包含动态加载或WAF。"
+    },
+    "method": {
+      "recommended": "not-available",
+      "auth_required": false,
+      "rate_limit": "N/A",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "unknown",
+      "structure_hint": "empty response"
+    },
+    "domains": ["gaokao", "education"],
+    "known_issues": [
+      "curl返回空",
+      "CDP浏览器可能可用但未验证"
+    ],
+    "alternatives": ["bing-search-cdp", "sunshine-gaokao"]
+  },
+  {
+    "id": "hebei-education-exam",
+    "name": "Hebei Education Examination Authority (河北教育考试院)",
+    "name_cn": "河北省教育考试院",
+    "url": "http://www.hebeea.edu.cn",
+    "type": "server-rendered-html",
+    "accessibility": {
+      "status": "needs-test",
+      "last_verified": "2026-05-25",
+      "verified_by": "qypvip",
+      "notes": "发布《普通高校招生录取统计》PDF，包含各校各专业最低分+位次。尚未实测。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "未知",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "可能包含PDF下载链接"
+    },
+    "domains": ["gaokao"],
+    "known_issues": [
+      "尚未实测，状态待验证",
+      "官方PDF可能无法直接解析（需PDF→文本转换）"
+    ],
+    "alternatives": ["bing-search-cdp"]
+  },
+  {
+    "id": "thepaper-cn",
+    "name": "The Paper (澎湃新闻)",
+    "name_cn": "澎湃新闻",
+    "url": "https://thepaper.cn",
+    "type": "server-rendered-html",
+    "accessibility": {
+      "status": "partial",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "部分文章可curl获取(200)，部分返回404。文章内容可直接读取。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "正常",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "文章正文区域可通过选择器提取"
+    },
+    "domains": ["gaokao", "education", "news"],
+    "known_issues": [
+      "部分文章返回404",
+      "页面结构可能变动"
+    ],
+    "alternatives": ["bing-search-cdp"]
+  },
+  {
+    "id": "eol-cn",
+    "name": "China Education Online (中国教育在线)",
+    "name_cn": "中国教育在线",
+    "url": "https://eol.cn",
+    "type": "server-rendered-html",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "主站可正常curl访问，部分子页面404。教育新闻和院校信息可用。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "rate_limit": "正常",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "标准文章页面结构"
+    },
+    "domains": ["gaokao", "education"],
+    "known_issues": [
+      "部分子页面404",
+      "院校详情页可能需要特殊参数"
+    ],
+    "alternatives": ["bing-search-cdp", "thepaper-cn"]
+  },
+  {
+    "id": "github",
+    "name": "GitHub",
+    "name_cn": "GitHub",
+    "url": "https://github.com",
+    "type": "connection-reset",
+    "accessibility": {
+      "status": "verified-broken",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "中国网络环境下GitHub连接频繁被重置（RST），clone/pull/push不稳定。"
+    },
+    "method": {
+      "recommended": "not-available",
+      "auth_required": true,
+      "rate_limit": "N/A",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "N/A - connection issues"
+    },
+    "domains": ["general"],
+    "known_issues": [
+      "连接被重置",
+      "需加代理或走Gitee镜像",
+      "raw.githubusercontent.com 偶尔可用"
+    ],
+    "alternatives": ["gitee"]
+  },
+  {
+    "id": "gitee",
+    "name": "Gitee (码云)",
+    "name_cn": "Gitee 代码托管",
+    "url": "https://gitee.com",
+    "type": "server-rendered-html",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-20",
+      "verified_by": "qypvip",
+      "notes": "国内Git托管平台，对中国网络友好。已验证可用。需配置SSH Key+Access Token。验证码频繁，API操作优先用token走curl。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": true,
+      "rate_limit": "有限，验证码频繁",
+      "encoding": "utf-8"
+    },
+    "response": {
+      "format": "html",
+      "structure_hint": "标准Web页面"
+    },
+    "domains": ["general"],
+    "known_issues": [
+      "Web操作频繁触发验证码",
+      "API限制严格",
+      "推荐用SSH Key + Access Token走git命令，避免Web操作"
+    ],
+    "alternatives": ["github"]
+  }
+]

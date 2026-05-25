@@ -1,0 +1,150 @@
+[
+  {
+    "id": "espn-squad-table-parser",
+    "name": "ESPN Squad HTML Table Parser",
+    "name_cn": "ESPN 球队名单HTML表格解析器",
+    "source_type": "server-rendered-html",
+    "parser_language": "python",
+    "extraction_rules": {
+      "method": "regex",
+      "rules": [
+        {"field": "player_name", "selector": "<tr class=\"Table__TR[^\"]*\"[^>]*>.*?</tr>", "post_process": "strip HTML tags"},
+        {"field": "position", "selector": "position column within each row", "post_process": "map 'G'->goalkeepers, 'D'->defenders, 'M'->midfielders, 'F'->forwards"}
+      ]
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "goalkeepers": {"type": "array", "items": {"type": "string"}},
+        "defenders": {"type": "array", "items": {"type": "string"}},
+        "midfielders": {"type": "array", "items": {"type": "string"}},
+        "forwards": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "dependencies": ["python3", "re", "urllib"],
+    "example_urls": [
+      "https://www.espn.com/soccer/team/squad/_/id/478/france",
+      "https://www.espn.com/soccer/team/squad/_/id/205/brazil"
+    ],
+    "known_quirks": [
+      "部分球队页面包含预备队成员，需要手动过滤（如Argentina显示55人）",
+      "英格兰页面显示35人（含尚未进入26人名单的预备球员）",
+      "ESPN team_id 非FIFA官方编号，需通过搜索或遍历发现"
+    ],
+    "related_data_sources": ["espn-soccer-squad"]
+  },
+  {
+    "id": "dongqiudi-article-extractor",
+    "name": "Dongqiudi Squad List Article Extractor",
+    "name_cn": "懂球帝大名单文章提取器",
+    "source_type": "mobile-api",
+    "parser_language": "python",
+    "extraction_rules": {
+      "method": "json-parse",
+      "rules": [
+        {"field": "article_id", "selector": "articles[].id", "post_process": "filter_by_title('世界杯名单')"},
+        {"field": "article_title", "selector": "articles[].title", "post_process": "parse for team name and player count"},
+        {"field": "article_url", "selector": "articles[].share", "post_process": "construct https://www.dongqiudi.com/article/{id}"}
+      ]
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "articles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "integer"},
+              "title": {"type": "string"},
+              "url": {"type": "string", "format": "uri"}
+            }
+          }
+        }
+      }
+    },
+    "dependencies": ["curl", "jq"],
+    "example_urls": [
+      "https://api.dongqiudi.com/app/tabs/android/1.json?mark=gif&version=74"
+    ],
+    "known_quirks": [
+      "只适合发现公告，不适合提取球员名单（文章正文需用CDP浏览器读取）",
+      "搜索API被屏蔽，只能用feed流轮询+关键词过滤",
+      "注意desc字段可能包含位置和俱乐部信息"
+    ],
+    "related_data_sources": ["dongqiudi-mobile-api", "dongqiudi-desktop-article"]
+  },
+  {
+    "id": "tencent-finance-quote-parser",
+    "name": "Tencent Finance Real-time Quote Parser",
+    "name_cn": "腾讯实时行情解析器",
+    "source_type": "json-api",
+    "parser_language": "python",
+    "extraction_rules": {
+      "method": "regex",
+      "rules": [
+        {"field": "stock_code", "selector": "v_(sh|sz|bj)(\\d+)=~", "post_process": "extract group 2"},
+        {"field": "stock_name", "selector": "~([^~]+)~", "post_process": "strip"},
+        {"field": "price", "selector": "position 3 in ~ delimited", "post_process": "float"},
+        {"field": "change_pct", "selector": "position 32 in ~ delimited", "post_process": "float"}
+      ]
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "code": {"type": "string"},
+        "name": {"type": "string"},
+        "price": {"type": "number"},
+        "change_pct": {"type": "number"}
+      }
+    },
+    "dependencies": ["python3", "requests"],
+    "example_urls": [
+      "https://qt.gtimg.cn/q=sh000001,sz000001"
+    ],
+    "known_quirks": [
+      "响应是GBK编码，需要resp.content.decode('gbk')",
+      "字段位置（32位涨跌幅）固定但可变的字段数，建议用.split('~') 按位置取",
+      "非交易时段涨跌幅=0"
+    ],
+    "related_data_sources": ["tencent-finance-api"]
+  },
+  {
+    "id": "tencent-historical-kline-parser",
+    "name": "Tencent Finance Historical K-Line Parser",
+    "name_cn": "腾讯历史K线解析器",
+    "source_type": "json-api",
+    "parser_language": "python",
+    "extraction_rules": {
+      "method": "json-path",
+      "rules": [
+        {"field": "daily_kline", "selector": "data[code]['qfqday']", "post_process": "map [date,open,close,high,low,volume]"},
+        {"field": "fallback_kline", "selector": "data[code]['day']", "post_process": "same mapping"}
+      ]
+    },
+    "output_schema": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [
+          {"type": "string", "description": "date"},
+          {"type": "number", "description": "open"},
+          {"type": "number", "description": "close"},
+          {"type": "number", "description": "high"},
+          {"type": "number", "description": "low"},
+          {"type": "number", "description": "volume"}
+        ]
+      }
+    },
+    "dependencies": ["python3", "requests", "json"],
+    "example_urls": [
+      "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh000001,day,,,120,qfq"
+    ],
+    "known_quirks": [
+      "最多120天数据",
+      "优先取'qfqday'（前复权），失败则取'day'（未复权）",
+      "参数格式：?param={prefix}{code},day,,,{days},qfq"
+    ],
+    "related_data_sources": ["tencent-finance-historical"]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "title": "Example: ESPN Squad Scrape for France (2026 World Cup)",
+  "domain": "football",
+  "data_source": "espn-soccer-squad",
+  "description": "使用ESPN HTML表格提取法国队2026世界杯26人大名单",
+  "data_source_url": "https://www.espn.com/soccer/team/squad/_/id/478/france",
+  "extraction_code": "python",
+  "code_snippet": "import re, urllib.request\n\ndef get_espn_squad(team_id, slug):\n    url = f'https://www.espn.com/soccer/team/squad/_/id/{team_id}/{slug}'\n    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0 ...'})\n    with urllib.request.urlopen(req, timeout=15) as resp:\n        html = resp.read().decode('utf-8', errors='ignore')\n    rows = re.findall(r'<tr class=\"Table__TR[^\"]*\"[^>]*>(.*?)</tr>', html, re.DOTALL)\n    role_map = {'G': 'goalkeepers', 'D': 'defenders', 'M': 'midfielders', 'F': 'forwards'}\n    squad = {'goalkeepers': [], 'defenders': [], 'midfielders': [], 'forwards': []}\n    for row in rows:\n        cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.DOTALL)\n        if len(cells) >= 2:\n            name = re.sub(r'<[^>]+>', '', cells[0]).strip()\n            pos = re.sub(r'<[^>]+>', '', cells[1]).strip()\n            if name and name != 'Name' and pos in role_map:\n                squad[role_map[pos]].append(name)\n    return squad",
+  "known_team_ids": {
+    "France": 478, "Brazil": 205, "Portugal": 482, "Austria": 474,
+    "Scotland": 580, "Sweden": 466, "South Korea": 451, "Japan": 627,
+    "Germany": 481, "Netherlands": 449, "Argentina": 202, "England": 448
+  },
+  "typical_output": "goalkeepers: ['Mike Maignan', 'Brice Samba', 'Alphonse Areola']; defenders: ['William Saliba', 'Dayot Upamecano', ...]; midfielders: ['Adrien Rabiot', 'Aurelien Tchouameni', ...]; forwards: ['Kylian Mbappe', 'Ousmane Dembele', ...]"
+}

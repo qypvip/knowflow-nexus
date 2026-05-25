@@ -1,0 +1,79 @@
+[
+  {
+    "id": "mp-001",
+    "name": "DataSource Reliability Auto-Decay",
+    "name_cn": "数据源可靠性自动衰减",
+    "description": "当一个数据源的准确率持续低时自动降低权重",
+    "pattern": "当一个数据源的准确率持续N次低于阈值 → 自动降低权重",
+    "condition": "该数据源的预测准确率连续5次低于全局平均准确率的60%",
+    "action": "该数据源权重 -= 0.02（下限0.05）; 标记为'低可靠'并输出警告",
+    "example_domains": ["football", "stock"],
+    "risk_level": "low"
+  },
+  {
+    "id": "mp-002",
+    "name": "Conflict-Based Confidence Downgrade",
+    "name_cn": "基于分歧的置信度降级",
+    "description": "多个数据源结论冲突时自动降级",
+    "pattern": "当多个数据源结论冲突严重 → 自动降级置信度",
+    "condition": "2个以上数据源的评分差异 > 20分（百分制）",
+    "action": "最终输出标记为'低置信度'；不触发自动操作（如自动买入、自动推荐等）",
+    "example_domains": ["football", "stock", "gaokao"],
+    "risk_level": "low"
+  },
+  {
+    "id": "mp-003",
+    "name": "Consensus Voting",
+    "name_cn": "共识投票裁决",
+    "description": "按共识数分档处理独立分析结果",
+    "pattern": "当N个独立策略并行分析后 → 按共识数分档处理",
+    "condition": "N个子Agent/策略完成分析后",
+    "action": "5+策略推荐同一结论 → 高置信度输出；3-4 → 中置信度；1-2 → 观察池",
+    "example_domains": ["stock", "football"],
+    "risk_level": "low"
+  },
+  {
+    "id": "mp-004",
+    "name": "Cold Streak Detection",
+    "name_cn": "连续错误检测与自动降权",
+    "description": "系统连续错误时进入Debug模式",
+    "pattern": "当系统连续多次预测错误 → 进入Debug模式",
+    "condition": "连续3次预测不正确",
+    "action": "进入debug模式：输出详细中间数据供人工检查；不作参数调整；发出通知",
+    "example_domains": ["football", "stock"],
+    "risk_level": "medium"
+  },
+  {
+    "id": "mp-005",
+    "name": "Slow Feedback Learning",
+    "name_cn": "慢反馈学习策略",
+    "description": "反馈周期长的领域使用批次更新",
+    "pattern": "反馈周期长的领域使用批次更新而非实时更新",
+    "condition": "领域反馈周期 > 7天（如高考录取结果需3个月）",
+    "action": "不逐日更新权重；采用季度性大更新，积累足够样本后一次性调参",
+    "example_domains": ["gaokao"],
+    "risk_level": "medium"
+  },
+  {
+    "id": "mp-006",
+    "name": "Data Source Diversity Requirement",
+    "name_cn": "数据源多样性约束",
+    "description": "关键决策必须有多源支撑",
+    "pattern": "关键决策必须至少有N个独立数据源支撑",
+    "condition": "做出高置信度推荐之前",
+    "action": "检查参与的数据源数量：<3个独立源 → 禁止输出高置信度结论；<2个 → 只输出'参考信息'不输出推荐",
+    "example_domains": ["football", "stock", "gaokao"],
+    "risk_level": "low"
+  },
+  {
+    "id": "mp-007",
+    "name": "Adaptive Time Window",
+    "name_cn": "自适应时间窗口",
+    "description": "时序分析窗口长度自动调整",
+    "pattern": "时序分析中的窗口长度根据数据波动性自动调整",
+    "condition": "数据波动率（标准差/均值）超过阈值",
+    "action": "高波动期缩短窗口（更敏感）；低波动期延长窗口（更平滑）",
+    "example_domains": ["football", "stock"],
+    "risk_level": "medium"
+  }
+]

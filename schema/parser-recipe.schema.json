@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/qypvip/knowflow-nexus/schema/parser-recipe.schema.json",
+  "title": "Parser Recipe",
+  "description": "解析器配方 —— 记录从特定类型网页/API提取结构化数据的方法",
+  "type": "object",
+  "required": ["id", "name", "source_type", "parser_language", "extraction_rules", "output_schema"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "配方唯一标识"
+    },
+    "name": {
+      "type": "string",
+      "description": "配方名称（英文）"
+    },
+    "name_cn": {
+      "type": "string",
+      "description": "配方中文名称"
+    },
+    "source_type": {
+      "type": "string",
+      "description": "适用数据源类型",
+      "enum": ["server-rendered-html", "json-api", "mobile-api", "spa"]
+    },
+    "parser_language": {
+      "type": "string",
+      "description": "推荐实现语言",
+      "enum": ["python", "javascript", "bash", "any"]
+    },
+    "extraction_rules": {
+      "type": "object",
+      "description": "提取规则集合",
+      "required": ["method"],
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "提取方法",
+          "enum": ["regex", "css-selector", "xpath", "json-path", "json-parse", "html-table"]
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": { "type": "string", "description": "输出字段名" },
+              "selector": { "type": "string", "description": "选择器/正则表达式" },
+              "post_process": { "type": "string", "description": "后处理函数（如 strip, trim, map）" }
+            }
+          },
+          "description": "字段提取规则列表"
+        }
+      }
+    },
+    "output_schema": {
+      "type": "object",
+      "description": "输出数据的结构定义"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "依赖库或工具"
+    },
+    "example_urls": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "示例 URL"
+    },
+    "known_quirks": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "已知特殊情况和处理技巧"
+    },
+    "related_data_sources": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "关联的数据源 ID"
+    }
+  }
+}
