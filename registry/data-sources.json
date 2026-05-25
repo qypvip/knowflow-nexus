@@ -22,17 +22,32 @@
       "format": "html",
       "structure_hint": "Table with class 'Table__TR' rows; columns: Name, Position(Pos), Age, Apps, Goals"
     },
-    "domains": ["football", "sports-tournament"],
+    "domains": [
+      "football",
+      "sports-tournament"
+    ],
     "known_issues": [
       "阿根廷/英格兰等顶级强队页面可能包含预备队（显示超过26人）",
       "ESPN更新可能比官方晚1-2天",
       "不同球队的team_id不同，需要先发现（搜索或遍历）"
     ],
-    "alternatives": ["dongqiudi-mobile-api", "fifa-official-squad"],
+    "alternatives": [
+      "dongqiudi-mobile-api",
+      "fifa-official-squad"
+    ],
     "examples": [
-      {"url": "https://www.espn.com/soccer/team/squad/_/id/478/france", "description": "🇫🇷 法国队26人名单"},
-      {"url": "https://www.espn.com/soccer/team/squad/_/id/205/brazil", "description": "🇧🇷 巴西队名单"},
-      {"url": "https://www.espn.com/soccer/team/squad/_/id/448/england", "description": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 英格兰名单（含预备队35人）"}
+      {
+        "url": "https://www.espn.com/soccer/team/squad/_/id/478/france",
+        "description": "🇫🇷 法国队26人名单"
+      },
+      {
+        "url": "https://www.espn.com/soccer/team/squad/_/id/205/brazil",
+        "description": "🇧🇷 巴西队名单"
+      },
+      {
+        "url": "https://www.espn.com/soccer/team/squad/_/id/448/england",
+        "description": "🏴󠁧󠁢󠁥󠁮󠁧󠁿 英格兰名单（含预备队35人）"
+      }
     ]
   },
   {
@@ -58,16 +73,27 @@
       "format": "json",
       "structure_hint": "articles[] 和 recommend[] 数组，含 id, title, description, share, secondary_category, published_at"
     },
-    "domains": ["football", "sports-tournament"],
+    "domains": [
+      "football",
+      "sports-tournament"
+    ],
     "known_issues": [
       "Search API 返回403（不可用于搜索）",
       "只能用 Feed 流关键词过滤",
       "文章正文需要 browser_navigate 到 desktop article URL 读取（JS渲染但accessibility tree可读）"
     ],
-    "alternatives": ["espn-soccer-squad"],
+    "alternatives": [
+      "espn-soccer-squad"
+    ],
     "examples": [
-      {"url": "https://api.dongqiudi.com/app/tabs/android/1.json?mark=gif&version=74", "description": "Feed API 返回最新文章列表"},
-      {"url": "https://www.dongqiudi.com/article/{id}", "description": "文章详情页（需browser_navigate）"}
+      {
+        "url": "https://api.dongqiudi.com/app/tabs/android/1.json?mark=gif&version=74",
+        "description": "Feed API 返回最新文章列表"
+      },
+      {
+        "url": "https://www.dongqiudi.com/article/{id}",
+        "description": "文章详情页（需browser_navigate）"
+      }
     ]
   },
   {
@@ -93,17 +119,28 @@
       "format": "plain-text",
       "structure_hint": "v_X_sh{code}~{name}~{code}~{price}~...格式，~分割字段"
     },
-    "domains": ["stock"],
+    "domains": [
+      "stock"
+    ],
     "known_issues": [
       "返回格式是自定义文本（非标准JSON），需按~分割解析",
       "GBK编码，Python需 .decode('gbk')",
       "非交易时段涨跌幅为0",
       "股票代码前缀规则：sh=6/9开头, sz=0/3开头, bj=其他"
     ],
-    "alternatives": ["efinance-package", "sina-finance-api"],
+    "alternatives": [
+      "efinance-package",
+      "sina-finance-api"
+    ],
     "examples": [
-      {"url": "https://qt.gtimg.cn/q=sh000001,sz000001", "description": "批量查询上证指数+平安银行"},
-      {"url": "https://qt.gtimg.cn/q=sh600519", "description": "查询贵州茅台"}
+      {
+        "url": "https://qt.gtimg.cn/q=sh000001,sz000001",
+        "description": "批量查询上证指数+平安银行"
+      },
+      {
+        "url": "https://qt.gtimg.cn/q=sh600519",
+        "description": "查询贵州茅台"
+      }
     ]
   },
   {
@@ -129,14 +166,21 @@
       "format": "json",
       "structure_hint": "data[code]['qfqday'] 或 ['day'] → [[date, open, close, high, low, volume], ...]"
     },
-    "domains": ["stock"],
+    "domains": [
+      "stock"
+    ],
     "known_issues": [
       "最多返回120天数据",
       "参数格式：?param={prefix}{code},day,,,{days},qfq"
     ],
-    "alternatives": ["efinance-package"],
+    "alternatives": [
+      "efinance-package"
+    ],
     "examples": [
-      {"url": "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh000001,day,,,120,qfq", "description": "上证指数120日K线"}
+      {
+        "url": "http://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=sh000001,day,,,120,qfq",
+        "description": "上证指数120日K线"
+      }
     ]
   },
   {
@@ -162,13 +206,19 @@
       "format": "json",
       "structure_hint": "pandas DataFrame"
     },
-    "domains": ["stock"],
+    "domains": [
+      "stock"
+    ],
     "known_issues": [
       "get_quote_history() 底层走东方财富 push2his.eastmoney.com，2026年5月起限流严重",
       "get_realtime_quotes(fs='沪深A股') 获取全市场股票列表仍可用（约5529只）",
       "需要 pip install efinance --break-system-packages"
     ],
-    "alternatives": ["tencent-finance-api", "tencent-finance-historical", "sina-finance-api"]
+    "alternatives": [
+      "tencent-finance-api",
+      "tencent-finance-historical",
+      "sina-finance-api"
+    ]
   },
   {
     "id": "sina-finance-api",
@@ -193,12 +243,17 @@
       "format": "json",
       "structure_hint": "返回股票列表JSON，支持node=sh_a/sz_a 参数"
     },
-    "domains": ["stock"],
+    "domains": [
+      "stock"
+    ],
     "known_issues": [
       "排序和筛选参数需要摸索",
       "GBK编码"
     ],
-    "alternatives": ["tencent-finance-api", "efinance-package"]
+    "alternatives": [
+      "tencent-finance-api",
+      "efinance-package"
+    ]
   },
   {
     "id": "sunshine-gaokao",
@@ -222,13 +277,18 @@
       "format": "html",
       "structure_hint": "N/A - blocked by WAF"
     },
-    "domains": ["gaokao"],
+    "domains": [
+      "gaokao"
+    ],
     "known_issues": [
       "阿里云WAF返回412状态码",
       "CDP浏览器也无法绕过",
       "建议直接使用训练知识或官方PDF"
     ],
-    "alternatives": ["bing-search-cdp", "gaokao-quark"]
+    "alternatives": [
+      "bing-search-cdp",
+      "gaokao-quark"
+    ]
   },
   {
     "id": "gaokao-quark",
@@ -253,14 +313,19 @@
       "format": "spa",
       "structure_hint": "JS动态渲染，accessibility tree可能为空"
     },
-    "domains": ["gaokao"],
+    "domains": [
+      "gaokao"
+    ],
     "known_issues": [
       "弹出'下载夸克PC端'弹窗需手动关闭",
       "省份切换影响真题页面但不影响考生数据",
       "子域名vt.quark.cn返回空页面",
       "手动操作比自动化更高效，适合截图/手动记录"
     ],
-    "alternatives": ["bing-search-cdp", "sunshine-gaokao"]
+    "alternatives": [
+      "bing-search-cdp",
+      "sunshine-gaokao"
+    ]
   },
   {
     "id": "bing-search-cdp",
@@ -285,14 +350,23 @@
       "format": "html",
       "structure_hint": "搜索结果页，链接可直接访问"
     },
-    "domains": ["gaokao", "football", "stock", "sports-tournament", "general"],
+    "domains": [
+      "gaokao",
+      "football",
+      "stock",
+      "sports-tournament",
+      "general"
+    ],
     "known_issues": [
       "无法curl获取（返回验证码/拦截）",
       "需要用CDP浏览器打开才能正常访问",
       "国内版搜索结果可能不如国际版全面",
       "用完CDP浏览器后需要主动关闭（停止Edge进程+取消cronjob）"
     ],
-    "alternatives": ["baidu-search-cdp", "google-search-cdp"]
+    "alternatives": [
+      "baidu-search-cdp",
+      "google-search-cdp"
+    ]
   },
   {
     "id": "baidu-baike",
@@ -316,13 +390,21 @@
       "format": "html",
       "structure_hint": "N/A - blocked"
     },
-    "domains": ["football", "gaokao", "general"],
+    "domains": [
+      "football",
+      "gaokao",
+      "general"
+    ],
     "known_issues": [
       "直接curl返回404",
       "部分页面可能被删除",
       "CDP浏览器可尝试但不保证"
     ],
-    "alternatives": ["bing-search-cdp", "wikipedia", "espn-soccer-squad"]
+    "alternatives": [
+      "bing-search-cdp",
+      "wikipedia",
+      "espn-soccer-squad"
+    ]
   },
   {
     "id": "wikipedia",
@@ -346,13 +428,20 @@
       "format": "html",
       "structure_hint": "N/A - connection reset"
     },
-    "domains": ["football", "general", "gaokao"],
+    "domains": [
+      "football",
+      "general",
+      "gaokao"
+    ],
     "known_issues": [
       "连接被重置（TCP RST）",
       "无法通过正常HTTP/HTTPS访问",
       "代理可能可行但不在本知识库范围"
     ],
-    "alternatives": ["espn-soccer-squad", "bing-search-cdp"]
+    "alternatives": [
+      "espn-soccer-squad",
+      "bing-search-cdp"
+    ]
   },
   {
     "id": "dongqiudi-desktop-article",
@@ -377,15 +466,22 @@
       "format": "html",
       "structure_hint": "浏览器accessibility tree可见球员名字、位置、俱乐部信息"
     },
-    "domains": ["football"],
+    "domains": [
+      "football"
+    ],
     "known_issues": [
       "Feed项点击不导航（React SPA绑定问题）",
       "需先通过Mobile API获取文章ID，然后用browser_navigate直接访问",
       "browser_snapshot(full=true)可读取正文但可能包含大量额外元素"
     ],
-    "alternatives": ["espn-soccer-squad"],
+    "alternatives": [
+      "espn-soccer-squad"
+    ],
     "examples": [
-      {"url": "https://www.dongqiudi.com/article/123456789", "description": "懂球帝文章详情页示例"}
+      {
+        "url": "https://www.dongqiudi.com/article/123456789",
+        "description": "懂球帝文章详情页示例"
+      }
     ]
   },
   {
@@ -410,12 +506,18 @@
       "format": "unknown",
       "structure_hint": "empty response"
     },
-    "domains": ["gaokao", "education"],
+    "domains": [
+      "gaokao",
+      "education"
+    ],
     "known_issues": [
       "curl返回空",
       "CDP浏览器可能可用但未验证"
     ],
-    "alternatives": ["bing-search-cdp", "sunshine-gaokao"]
+    "alternatives": [
+      "bing-search-cdp",
+      "sunshine-gaokao"
+    ]
   },
   {
     "id": "hebei-education-exam",
@@ -439,12 +541,16 @@
       "format": "html",
       "structure_hint": "可能包含PDF下载链接"
     },
-    "domains": ["gaokao"],
+    "domains": [
+      "gaokao"
+    ],
     "known_issues": [
       "尚未实测，状态待验证",
       "官方PDF可能无法直接解析（需PDF→文本转换）"
     ],
-    "alternatives": ["bing-search-cdp"]
+    "alternatives": [
+      "bing-search-cdp"
+    ]
   },
   {
     "id": "thepaper-cn",
@@ -468,12 +574,18 @@
       "format": "html",
       "structure_hint": "文章正文区域可通过选择器提取"
     },
-    "domains": ["gaokao", "education", "news"],
+    "domains": [
+      "gaokao",
+      "education",
+      "news"
+    ],
     "known_issues": [
       "部分文章返回404",
       "页面结构可能变动"
     ],
-    "alternatives": ["bing-search-cdp"]
+    "alternatives": [
+      "bing-search-cdp"
+    ]
   },
   {
     "id": "eol-cn",
@@ -497,12 +609,18 @@
       "format": "html",
       "structure_hint": "标准文章页面结构"
     },
-    "domains": ["gaokao", "education"],
+    "domains": [
+      "gaokao",
+      "education"
+    ],
     "known_issues": [
       "部分子页面404",
       "院校详情页可能需要特殊参数"
     ],
-    "alternatives": ["bing-search-cdp", "thepaper-cn"]
+    "alternatives": [
+      "bing-search-cdp",
+      "thepaper-cn"
+    ]
   },
   {
     "id": "github",
@@ -526,13 +644,17 @@
       "format": "html",
       "structure_hint": "N/A - connection issues"
     },
-    "domains": ["general"],
+    "domains": [
+      "general"
+    ],
     "known_issues": [
       "连接被重置",
       "需加代理或走Gitee镜像",
       "raw.githubusercontent.com 偶尔可用"
     ],
-    "alternatives": ["gitee"]
+    "alternatives": [
+      "gitee"
+    ]
   },
   {
     "id": "gitee",
@@ -556,12 +678,69 @@
       "format": "html",
       "structure_hint": "标准Web页面"
     },
-    "domains": ["general"],
+    "domains": [
+      "general"
+    ],
     "known_issues": [
       "Web操作频繁触发验证码",
       "API限制严格",
       "推荐用SSH Key + Access Token走git命令，避免Web操作"
     ],
-    "alternatives": ["github"]
+    "alternatives": [
+      "github"
+    ]
+  },
+  {
+    "id": "thesportsdb-free-api",
+    "name": "TheSportsDB Free API",
+    "name_cn": "TheSportsDB 免费体育数据API",
+    "url": "https://www.thesportsdb.com/api/v1/json/3",
+    "type": "json-api",
+    "accessibility": {
+      "status": "verified-working",
+      "last_verified": "2026-05-25",
+      "verified_by": "qypvip",
+      "notes": "免费API Key为'3'，无需注册。返回JSON格式。用于获取足球比赛日程、联赛积分榜、球队信息。"
+    },
+    "method": {
+      "recommended": "curl",
+      "auth_required": false,
+      "auth_type": "api-key",
+      "rate_limit": "免费API约每分钟10次，过量可能被限",
+      "encoding": "utf-8",
+      "user_agent_required": false
+    },
+    "response": {
+      "format": "json",
+      "structure_hint": "eventsday.php → {'events': [{...}]}; lookuptable.php → {'table': [{...}]}; searchteams.php → {'teams': [{...}]}"
+    },
+    "domains": [
+      "football"
+    ],
+    "known_issues": [
+      "免费API Key '3' 有速率限制",
+      "不保证实时更新，比赛数据可能有延迟",
+      "API版本v1，部分端点可能不可用",
+      "eventsround.php 的 round 参数需与赛季精确匹配"
+    ],
+    "alternatives": [
+      "dongqiudi-mobile-api"
+    ],
+    "endpoints": {
+      "events_day": "/eventsday.php?d={date}&s=Soccer",
+      "events_round": "/eventsround.php?id={league_id}&r={round}&s={season}",
+      "league_table": "/lookuptable.php?l={league_id}&s={season}",
+      "team_search": "/searchteams.php?t={team_name}"
+    },
+    "examples": [
+      {
+        "url": "https://www.thesportsdb.com/api/v1/json/3/eventsday.php?d=2026-05-25&s=Soccer",
+        "description": "当天足球比赛"
+      },
+      {
+        "url": "https://www.thesportsdb.com/api/v1/json/3/lookuptable.php?l=4328&s=2024-2025",
+        "description": "英超积分榜"
+      }
+    ]
   }
 ]
